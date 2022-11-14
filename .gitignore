@@ -1,0 +1,12 @@
+#object files
+*.o
+*.obj
+
+#libs
+*.a
+*.lib
+
+#binaries
+*.hex
+*.elf
+*.out
