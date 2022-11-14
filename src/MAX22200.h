@@ -3,6 +3,16 @@
 
 #include <stdint.h>
 
+#define MAX22200_READ 0
+#define MAX22200_WRITE 1
+
+typedef struct {
+    bool n8: 1;
+    unsigned int addr: 4;
+    unsigned int rfu: 2;
+    bool rw: 1;
+} MAX22200Cmd;
+
 class MAX22200 {
 
 private:
@@ -14,8 +24,10 @@ private:
     
     uint8_t count;
 
-    inline void beginTransaction() const;
-    inline void endTransaction() const;
+    inline void beginTransaction();
+    inline void endTransaction();
+
+    inline void sendCmd(MAX22200Cmd);
 
 public:
 
@@ -25,6 +37,12 @@ public:
     inline void enable();
     inline void disable();
     inline void setEnable(bool);
+
+    inline void read(uint8_t addr, uint8_t* data);
+    inline void read(uint8_t addr, uint32_t* data);
+
+    inline void write(uint8_t addr, const uint8_t* data);
+    inline void write(uint8_t addr, const uint32_t* data);
 
 };
 
