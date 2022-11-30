@@ -1,17 +1,9 @@
 #ifndef MAX22200_H
 #define MAX22200_H
 
+#include "MAX22200_registers.h"
+
 #include <stdint.h>
-
-#define MAX22200_READ 0
-#define MAX22200_WRITE 1
-
-typedef struct {
-    bool n8: 1;
-    unsigned int addr: 4;
-    unsigned int rfu: 2;
-    bool rw: 1;
-} MAX22200Cmd;
 
 class MAX22200 {
 
@@ -27,7 +19,7 @@ private:
     inline void beginTransaction();
     inline void endTransaction();
 
-    inline void sendCmd(MAX22200Cmd);
+    inline void sendCmd(uint8_t);
 
 public:
 

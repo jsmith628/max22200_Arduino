@@ -40,14 +40,13 @@ inline void MAX22200::enable() { digitalWrite(pin_en, true); }
 inline void MAX22200::disable() { digitalWrite(pin_en, false); }
 inline void MAX22200::setEnable(bool en) { digitalWrite(pin_en, en); }
 
-inline void MAX22200::sendCmd(MAX22200Cmd cmd) {
+inline void MAX22200::sendCmd(uint8_t cmd) {
 
     digitalWrite(pin_cmd, HIGH);
     beginTransaction();
 
     for(int i=0; i<count; i++) {
-        MAX22200Cmd res = cmd;
-        SPI.transfer(&res, sizeof(uint32_t));
+        SPI.transfer(cmd);
     }
 
     endTransaction();
@@ -57,7 +56,7 @@ inline void MAX22200::sendCmd(MAX22200Cmd cmd) {
 
 inline void MAX22200::read(uint8_t addr, uint8_t* data) {
 
-    MAX22200Cmd cmd = {.n8 = true, .addr = addr, .rfu = 0, .rw = MAX22200_READ};
+    uint8_t cmd = MAX22200_COMMAND(true, addr, MAX22200_READ);
     sendCmd(cmd);
 
     beginTransaction();
@@ -70,7 +69,7 @@ inline void MAX22200::read(uint8_t addr, uint8_t* data) {
 
 inline void MAX22200::read(uint8_t addr, uint32_t* data) {
 
-    MAX22200Cmd cmd = {.n8 = false, .addr = addr, .rfu = 0, .rw = MAX22200_READ};
+    uint8_t cmd = MAX22200_COMMAND(false, addr, MAX22200_READ);
     sendCmd(cmd);
 
     beginTransaction();
@@ -84,7 +83,7 @@ inline void MAX22200::read(uint8_t addr, uint32_t* data) {
 }
 
 inline void MAX22200::write(uint8_t addr, const uint8_t* data) {
-    MAX22200Cmd cmd = {.n8 = true, .addr = addr, .rfu = 0, .rw = MAX22200_WRITE};
+    uint8_t cmd = MAX22200_COMMAND(true, addr, MAX22200_WRITE);
     sendCmd(cmd);
 
     beginTransaction();
@@ -95,7 +94,7 @@ inline void MAX22200::write(uint8_t addr, const uint8_t* data) {
 }
 
 inline void MAX22200::write(uint8_t addr, const uint32_t* data) {
-    MAX22200Cmd cmd = {.n8 = false, .addr = addr, .rfu = 0, .rw = MAX22200_WRITE};
+    uint8_t cmd = MAX22200_COMMAND(false, addr, MAX22200_WRITE);
     sendCmd(cmd);
 
     beginTransaction();
