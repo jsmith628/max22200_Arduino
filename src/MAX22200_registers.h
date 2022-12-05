@@ -22,6 +22,22 @@
 )
 
 //
+//Register addresses
+//
+
+#define MAX22200_STATUS  0x00
+#define MAX22200_CFG_CH1 0x01
+#define MAX22200_CFG_CH2 0x02
+#define MAX22200_CFG_CH3 0x03
+#define MAX22200_CFG_CH4 0x04
+#define MAX22200_CFG_CH5 0x05
+#define MAX22200_CFG_CH6 0x06
+#define MAX22200_CFG_CH7 0x07
+#define MAX22200_CFG_CH8 0x08
+#define MAX22200_FAULT   0x09
+#define MAX22200_CFG_DPM 0x0A
+
+//
 //Channel config values
 //
 
@@ -58,6 +74,38 @@
 
 #define MAX22200_ONCH    24
 
+//
+//CFG_CH register bits
+//
 
+#define MAX22200_HHF_EN    0
+#define MAX22200_DPM_EN    1
+#define MAX22200_OL_EN     2
+#define MAX22200_SRC       3
+#define MAX22200_FREQ_CFG  4
+#define MAX22200_HSnLS     6
+#define MAX22200_VDRnCDR   7
+#define MAX22200_HIT_T     8
+#define MAX22200_HIT      16
+#define MAX22200_TRIGnSPI 23
+#define MAX22200_HOLD     24
+#define MAX22200_HFS      31
+
+//
+//FAULT register bits
+//
+
+#define MAX22200_DPM  0
+#define MAX22200_OLF  8
+#define MAX22200_HHF 16
+#define MAX22200_OCP 24
+
+//
+//CFG_DPM register bits
+//
+
+#define MAX22200_DPM_IPTH    0
+#define MAX22200_DPM_TDEB    4
+#define MAX22200_DPM_ISTART  8
 
 #endif //MAX22200_REGISTERS_H
