@@ -41,9 +41,9 @@
 //Channel config values
 //
 
-#define MAX22200_DEFAULT_CONFIG  0x00 //Each channel is separately controlled
-#define MAX22200_PARALLEL_CONFIG 0x01 //The two channels act together for doubling current capacity
-#define MAX22200_FULL_BRIDGE     0x10 //For driving loads (like motors), that can be reversed
+#define MAX22200_DEFAULT_CONFIG  0b00 //Each channel is separately controlled
+#define MAX22200_PARALLEL_CONFIG 0b01 //The two channels act together for doubling current capacity
+#define MAX22200_FULL_BRIDGE     0b10 //For driving loads (like motors), that can be reversed
 
 //
 //Status register bits
