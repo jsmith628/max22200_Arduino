@@ -59,14 +59,14 @@ inline uint8_t MAX22200::transfer8(uint8_t addr, uint8_t out) {
 inline uint32_t MAX22200::transfer32(uint8_t addr, uint32_t out) {
     beginTransaction();
 
-    sendCmd(MAX22200_COMMAND(true, addr, MAX22200_READ));    
+    sendCmd(MAX22200_COMMAND(false, addr, MAX22200_READ));    
 
     digitalWrite(pin_csb, LOW);
     uint32_t in = 0;
-    in |= SPI.transfer((uint8_t) (out));
-    in |= SPI.transfer((uint8_t) (out>>8));
-    in |= SPI.transfer((uint8_t) (out>>16));
-    in |= SPI.transfer((uint8_t) (out>>24));
+    in |= (uint32_t) SPI.transfer((uint8_t) (out>>24)) << 24;
+    in |= (uint32_t) SPI.transfer((uint8_t) (out>>16)) << 16;
+    in |= (uint32_t) SPI.transfer((uint8_t) (out>>8))  << 8;
+    in |= (uint32_t) SPI.transfer((uint8_t) (out));
     digitalWrite(pin_csb, HIGH);
     
     endTransaction();
