@@ -95,10 +95,10 @@
 //FAULT register bits
 //
 
-#define MAX22200_DPM  0
-#define MAX22200_OLF  8
-#define MAX22200_HHF 16
-#define MAX22200_OCP 24
+#define MAX22200_FAULT_DPM  0
+#define MAX22200_FAULT_OLF  8
+#define MAX22200_FAULT_HHF 16
+#define MAX22200_FAULT_OCP 24
 
 //
 //CFG_DPM register bits
