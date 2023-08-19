@@ -5,6 +5,98 @@
 #include <Arduino.h>
 #include <SPI.h>
 
+#define SET_BITS(x, mask, val) \
+if(val) {\
+    x |= mask;\
+} else {\
+    x &= ~mask;\
+}
+
+void MAX22200::ChannelConfig::setScale(bool half) {
+    SET_BITS(bits, _BV(MAX22200_HFS), half);
+}
+bool MAX22200::ChannelConfig::usesHalfScale() const {
+    return (bits & _BV(MAX22200_HFS)) != 0;
+}
+
+void MAX22200::ChannelConfig::setControlMode(bool trig) {
+    SET_BITS(bits, _BV(MAX22200_TRIGnSPI), trig);
+}
+bool MAX22200::ChannelConfig::usesTriggerPin() const {
+    return (bits & _BV(MAX22200_TRIGnSPI)) != 0;
+}
+
+void MAX22200::ChannelConfig::setDriveMode(bool vdr) {
+    SET_BITS(bits, _BV(MAX22200_VDRnCDR), vdr);
+}
+bool MAX22200::ChannelConfig::usesVoltageDrive() const {
+    return (bits & _BV(MAX22200_VDRnCDR)) != 0;
+}
+
+void MAX22200::ChannelConfig::setHit(uint8_t level) {
+    level >>= 1; //reduce to 7-bits
+    bits &= ~((uint32_t) 0x7Fu << MAX22200_HIT); //reset the hold current
+    bits |= (uint32_t) level << MAX22200_HIT; //set the bits
+}
+
+uint8_t MAX22200::ChannelConfig::hitLevel() const {
+    return ((bits >> MAX22200_HIT) & 0x7Fu) << 1;
+}
+
+void MAX22200::ChannelConfig::setHold(uint8_t level) {
+    level >>= 1; //reduce to 7-bits
+    bits &= ~((uint32_t) 0x7Fu << MAX22200_HOLD); //reset the hold current
+    bits |= (uint32_t) level << MAX22200_HOLD;  //set the bits
+}
+
+uint8_t MAX22200::ChannelConfig::holdLevel() const {
+    return ((bits >> MAX22200_HOLD) & 0x7) << 1;
+}
+
+void MAX22200::ChannelConfig::setHitTime(uint8_t cycles) {
+    bits &= ~((uint32_t) 0x7Fu << MAX22200_HIT_T); //reset the hold current
+    bits |= (uint32_t) cycles << MAX22200_HIT_T;  //set the bits
+}
+
+uint8_t MAX22200::ChannelConfig::hitTime() const {
+    return ((bits >> MAX22200_HIT_T) & 0xFF) << 1;
+}
+
+void MAX22200::ChannelConfig::setPolarity(bool high_side) {
+    SET_BITS(bits, _BV(MAX22200_HSnLS), high_side);
+}
+bool MAX22200::ChannelConfig::usesHighSideSwitching() const {
+    return (bits & _BV(MAX22200_HSnLS)) != 0;
+}
+
+void MAX22200::ChannelConfig::setSlewRateControl(bool slc) {
+    SET_BITS(bits, _BV(MAX22200_SRC), slc);
+}
+bool MAX22200::ChannelConfig::slewRateControlEnabled() const {
+    return (bits & _BV(MAX22200_SRC)) != 0;
+}
+
+void MAX22200::ChannelConfig::setOpenLoadDetectionEnable(bool en) {
+    SET_BITS(bits, _BV(MAX22200_OL_EN), en);
+}
+bool MAX22200::ChannelConfig::openLoadDectionEnabled() const {
+    return (bits & _BV(MAX22200_OL_EN)) != 0;
+}
+
+void MAX22200::ChannelConfig::setDetectionOfPlungerMovementEnable(bool en) {
+    SET_BITS(bits, _BV(MAX22200_DPM_EN), en);
+}
+bool MAX22200::ChannelConfig::detectionOfPlungerMovementEnabled() const {
+    return (bits & _BV(MAX22200_DPM_EN)) != 0;
+}
+
+void MAX22200::ChannelConfig::setHitCurrentCheckEnable(bool en) {
+    SET_BITS(bits, _BV(MAX22200_HHF_EN), en);
+}
+bool MAX22200::ChannelConfig::hitCurrentCheckEnabled() const {
+    return (bits & _BV(MAX22200_HHF_EN)) != 0;
+}
+
 MAX22200::MAX22200(uint8_t en, uint8_t csb, uint8_t cmd) {
     //set pins
     pin_en = en;
