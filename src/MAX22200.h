@@ -12,9 +12,7 @@ public:
     };
 
     struct ChannelConfig {
-
-        uint32_t bits = 0;        
-
+        uint32_t bits = 0;
     };
 
 
@@ -27,43 +25,43 @@ private:
 
     uint32_t status;
 
-    inline void beginTransaction();
-    inline void endTransaction();
+    void beginTransaction();
+    void endTransaction();
 
-    inline void sendCmd(uint8_t);
+    void sendCmd(uint8_t);
 
-    inline uint8_t transfer8(uint8_t addr, uint8_t data);
-    inline uint32_t transfer32(uint8_t addr, uint32_t data);
+    uint8_t transfer8(uint8_t addr, uint8_t data);
+    uint32_t transfer32(uint8_t addr, uint32_t data);
 
 public:
 
     MAX22200(uint8_t en, uint8_t csb, uint8_t cmd);
 
-    inline void enable();
-    inline void disable();
-    inline void setEnable(bool);
+    void enable();
+    void disable();
+    void setEnable(bool);
 
-    inline uint8_t  read8(uint8_t addr);
-    inline uint32_t read32(uint8_t addr);
+    uint8_t  read8(uint8_t addr);
+    uint32_t read32(uint8_t addr);
 
-    inline void write8(uint8_t addr, uint8_t data);
-    inline void write32(uint8_t addr, uint32_t data);
+    void write8(uint8_t addr, uint8_t data);
+    void write32(uint8_t addr, uint32_t data);
 
-    inline void begin();
-    inline void begin(ChannelMode ch10, ChannelMode ch32, ChannelMode ch54, ChannelMode ch76);
+    void begin();
+    void begin(ChannelMode ch10, ChannelMode ch32, ChannelMode ch54, ChannelMode ch76);
 
-    inline void setChannelModes(ChannelMode cm10, ChannelMode cm32, ChannelMode cm54, ChannelMode cm76);
-    inline void setChannelMode(uint8_t ch, ChannelMode mode);
-    inline ChannelMode getChannelMode(uint8_t ch);
+    void setChannelModes(ChannelMode cm10, ChannelMode cm32, ChannelMode cm54, ChannelMode cm76);
+    void setChannelMode(uint8_t ch, ChannelMode mode);
+    ChannelMode getChannelMode(uint8_t ch);
 
-    inline void setChannels(uint8_t out);
-    inline void setChannel(uint8_t ch, bool on);
-    inline bool toggleChannel(uint8_t ch);
-    inline uint8_t getChannels();
-    inline bool getChannel(uint8_t ch);
+    void setChannels(uint8_t out);
+    void setChannel(uint8_t ch, bool on);
+    bool toggleChannel(uint8_t ch);
+    uint8_t getChannels();
+    bool getChannel(uint8_t ch);
 
-    inline void configChannel(uint8_t ch, ChannelConfig cfg);
-    inline ChannelConfig readChannelConfig(uint8_t ch);
+    void configChannel(uint8_t ch, ChannelConfig cfg);
+    ChannelConfig readChannelConfig(uint8_t ch);
 
 };
 

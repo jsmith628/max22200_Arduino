@@ -12,15 +12,15 @@ MAX22200::MAX22200(uint8_t en, uint8_t csb, uint8_t cmd) {
     pin_cmd = cmd;    
 }
 
-inline void MAX22200::beginTransaction() {
+void MAX22200::beginTransaction() {
     SPI.beginTransaction(SPISettings(5e6/*5MHz*/, MSBFIRST, SPI_MODE0));
 }
 
-inline void MAX22200::endTransaction() {
+void MAX22200::endTransaction() {
     SPI.endTransaction();
 }
 
-inline void MAX22200::sendCmd(uint8_t cmd) {
+void MAX22200::sendCmd(uint8_t cmd) {
     digitalWrite(pin_cmd, HIGH);
     digitalWrite(pin_csb, LOW);
     SPI.transfer(cmd);
@@ -28,11 +28,11 @@ inline void MAX22200::sendCmd(uint8_t cmd) {
     digitalWrite(pin_cmd, LOW);
 }
 
-inline void MAX22200::setEnable(bool en) { digitalWrite(pin_en, en); }
-inline void MAX22200::enable() { setEnable(true); }
-inline void MAX22200::disable() { setEnable(false); }
+void MAX22200::setEnable(bool en) { digitalWrite(pin_en, en); }
+void MAX22200::enable() { setEnable(true); }
+void MAX22200::disable() { setEnable(false); }
 
-inline uint8_t MAX22200::transfer8(uint8_t addr, uint8_t out) {
+uint8_t MAX22200::transfer8(uint8_t addr, uint8_t out) {
     beginTransaction();
 
     sendCmd(MAX22200_COMMAND(true, addr, MAX22200_READ));    
@@ -46,7 +46,7 @@ inline uint8_t MAX22200::transfer8(uint8_t addr, uint8_t out) {
     return in;
 }
 
-inline uint32_t MAX22200::transfer32(uint8_t addr, uint32_t out) {
+uint32_t MAX22200::transfer32(uint8_t addr, uint32_t out) {
     beginTransaction();
 
     sendCmd(MAX22200_COMMAND(false, addr, MAX22200_READ));    
@@ -64,27 +64,27 @@ inline uint32_t MAX22200::transfer32(uint8_t addr, uint32_t out) {
     return in;
 }
 
-inline uint8_t MAX22200::read8(uint8_t addr) {
+uint8_t MAX22200::read8(uint8_t addr) {
     return transfer8(addr, 0);
 }
 
-inline uint32_t MAX22200::read32(uint8_t addr) {
+uint32_t MAX22200::read32(uint8_t addr) {
     return transfer32(addr, 0);
 }
 
-inline void MAX22200::write8(uint8_t addr, uint8_t data) {
+void MAX22200::write8(uint8_t addr, uint8_t data) {
     transfer8(addr, data);
 }
 
-inline void MAX22200::write32(uint8_t addr, uint32_t data) {
+void MAX22200::write32(uint8_t addr, uint32_t data) {
     transfer32(addr, data);
 }
 
-inline void MAX22200::begin() {
+void MAX22200::begin() {
     begin(MAX22200::Default, MAX22200::Default, MAX22200::Default, MAX22200::Default);
 }
 
-inline void MAX22200::begin(
+void MAX22200::begin(
     MAX22200::ChannelMode cm10, MAX22200::ChannelMode cm32,
     MAX22200::ChannelMode cm54, MAX22200::ChannelMode cm76
 ) {
@@ -98,15 +98,16 @@ inline void MAX22200::begin(
     digitalWrite(pin_cmd, LOW);
     enable();
 
-    //TODO: set fault masks??
     status = read32(MAX22200_STATUS);
     status &= 0x00FFFFFF;          //set all channels low
+
+    //TODO: set fault masks instead of overwriting??
     status = _BV(MAX22200_ACTIVE); //set active
     setChannelModes(cm10, cm32, cm54, cm76);
 
 }
 
-inline void MAX22200::setChannelModes(
+void MAX22200::setChannelModes(
     MAX22200::ChannelMode cm10, MAX22200::ChannelMode cm32,
     MAX22200::ChannelMode cm54, MAX22200::ChannelMode cm76
 ) {
@@ -124,7 +125,7 @@ inline void MAX22200::setChannelModes(
 }
 
 //TODO: lol
-inline void MAX22200::setChannelMode(uint8_t ch, ChannelMode mode) {
+void MAX22200::setChannelMode(uint8_t ch, ChannelMode mode) {
     //round down to the nearest even number
     ch &= ~1u;
 
@@ -137,27 +138,27 @@ inline void MAX22200::setChannelMode(uint8_t ch, ChannelMode mode) {
     write32(MAX22200_STATUS, status);
 }
 
-inline MAX22200::ChannelMode MAX22200::getChannelMode(uint8_t ch) {
+MAX22200::ChannelMode MAX22200::getChannelMode(uint8_t ch) {
     //round down to nearest even number
     ch &= ~1u;
     return 0b11 & (status >> (MAX22200_CM10 + ch));
 }
 
-inline uint8_t MAX22200::getChannels() {
+uint8_t MAX22200::getChannels() {
     return (uint8_t) (status >> MAX22200_ONCH);
 }
 
-inline void MAX22200::setChannels(uint8_t out) {
+void MAX22200::setChannels(uint8_t out) {
     status &= 0x00FFFFFFu;
     status |= (uint32_t) out << MAX22200_ONCH;
     write8(MAX22200_STATUS, out);
 }
 
-inline bool MAX22200::getChannel(uint8_t ch) {
+bool MAX22200::getChannel(uint8_t ch) {
     return (status & _BV(ch+MAX22200_ONCH)) != 0;
 }
 
-inline void MAX22200::setChannel(uint8_t ch, bool on) {
+void MAX22200::setChannel(uint8_t ch, bool on) {
     uint8_t channels = getChannels();
     if(on) {
         channels |= 1<<ch;
@@ -167,15 +168,15 @@ inline void MAX22200::setChannel(uint8_t ch, bool on) {
     setChannels(channels);
 }
 
-inline bool MAX22200::toggleChannel(uint8_t ch) {
+bool MAX22200::toggleChannel(uint8_t ch) {
     setChannels(getChannels() ^ _BV(ch));
 }
 
-inline void MAX22200::configChannel(uint8_t ch, MAX22200::ChannelConfig cfg) {
+void MAX22200::configChannel(uint8_t ch, MAX22200::ChannelConfig cfg) {
     write32(MAX22200_CFG_CH1+ch, cfg.bits);
 }
 
-inline MAX22200::ChannelConfig MAX22200::readChannelConfig(uint8_t ch) {
+MAX22200::ChannelConfig MAX22200::readChannelConfig(uint8_t ch) {
     return { read32(MAX22200_CFG_CH1+ch) };
 }
 
