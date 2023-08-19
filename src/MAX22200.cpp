@@ -203,7 +203,8 @@ void MAX22200::begin(
     status &= 0x00FFFFFF;          //set all channels low
 
     //TODO: set fault masks instead of overwriting??
-    status = _BV(MAX22200_ACTIVE); //set active
+    status  = _BV(MAX22200_ACTIVE); //set active
+    status |= _BV(MAX22200_FREQM); //set max frequency to 80khz
     setChannelModes(cm10, cm32, cm54, cm76);
 
 }
