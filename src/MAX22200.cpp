@@ -112,7 +112,8 @@ inline void MAX22200::setChannelModes(
 ) {
 
     //clear prev config
-    status &= 0xFFFF00FF;
+    const uint32_t mask = 0xFFu << MAX22200_CM10;
+    status &= ~mask;
 
     status |= (uint32_t) cm10 << MAX22200_CM10;
     status |= (uint32_t) cm32 << MAX22200_CM32;
@@ -123,12 +124,22 @@ inline void MAX22200::setChannelModes(
 }
 
 //TODO: lol
-inline void MAX22200::setChannelMode(uint8_t ch, ChannelMode mode);
+inline void MAX22200::setChannelMode(uint8_t ch, ChannelMode mode) {
+    //round down to the nearest even number
+    ch &= ~1u;
+
+    //delete the prev mode
+    uint32_t mask = 0b11u << (ch+MAX22200_CM10);
+    status &= ~mask;
+
+    //update the mode
+    status |= (uint32_t) mode << (ch+MAX22200_CM10);
+    write32(MAX22200_STATUS, status);
+}
 
 inline MAX22200::ChannelMode MAX22200::getChannelMode(uint8_t ch) {
     //round down to nearest even number
-    ch >>= 1;
-    ch <<= 1;
+    ch &= ~1u;
     return 0b11 & (status >> (MAX22200_CM10 + ch));
 }
 
@@ -137,7 +148,7 @@ inline uint8_t MAX22200::getChannels() {
 }
 
 inline void MAX22200::setChannels(uint8_t out) {
-    status &= 0x00FFFFFF;
+    status &= 0x00FFFFFFu;
     status |= (uint32_t) out << MAX22200_ONCH;
     write8(MAX22200_STATUS, out);
 }
