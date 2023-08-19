@@ -148,16 +148,16 @@ public:
             uint16_t cycles = ms * 2;
 
             //Pick the highest chopping frequency that lets use this hit time
-            if(cycles < 256) {
+            if(cycles < 255) {
                 setHitTime(cycles);
                 setChoppingFrequency(F80kHZ);
-            } else if(cycles < 256*2) {
+            } else if(cycles < 255*2) {
                 setHitTime(cycles/2);
                 setChoppingFrequency(F40kHZ);
-            } else if(cycles < 256*3) {
+            } else if(cycles < 255*3) {
                 setHitTime(cycles/3);
                 setChoppingFrequency(F26kHZ);
-            } else if(cycles < 256*4) {
+            } else if(cycles < 255*4) {
                 setHitTime(cycles/4);
                 setChoppingFrequency(F20kHZ);
             } else {
