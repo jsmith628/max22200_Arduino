@@ -11,6 +11,10 @@ public:
         Default = 0, Parallel = 0b01, FullBridge = 0b10
     };
 
+    enum ChoppingFrequency {
+        F20kHZ = 0, F26kHZ = 1, F40kHZ = 2, F80kHZ = 3
+    };
+
     struct ChannelConfig {
 
         uint32_t bits = 0;
@@ -66,6 +70,31 @@ public:
         inline bool usesCurrentDrive() const { return !usesVoltageDrive(); }
 
         //
+        //Sets the PWM / Regulator frequency. A higher value potentially reduces
+        //ripples in the output at the cost of a reduced range of possible hit times.
+        //Setting this on its own *will* change the hit time that's currently set.
+        //It's recommended to use setHitTimeMicros() to set this indirectly.
+        //Default Value is 100kHz
+        //
+        void setChoppingFrequency(ChoppingFrequency f);
+        inline ChannelConfig withChoppingFrequency(ChoppingFrequency f) {
+            setChoppingFrequency(f);
+            return *this;
+        }
+
+        ChoppingFrequency choppingFrequency() const;
+        inline uint8_t choppingFrequencykHz() const {
+            switch(choppingFrequency()) {
+                case F80kHZ: return 80;
+                case F40kHZ: return 40;
+                case F26kHZ: return 26;
+                case F20kHZ: return 20;
+                default: return 80;
+            }
+        }
+
+
+        //
         //Set the HIT current level. Ranges from 0-255 where 0 is off, and 255 is full power.
         //With voltage drive, this controls the duty cycle. With current drive
         //this controls the current. Note that only the upper 7 bits are used in practice.
@@ -88,13 +117,64 @@ public:
         uint8_t holdLevel() const;
 
         //
-        //Sets the duration of the HIT phase.
+        //Sets the duration of the HIT phase. This is measured in units dependent
+        //on the chopping frequency. A value of 254 is the max finite value,
+        //and 255 is taken to be an infinite duration.
         //The default value is 0.
         //
         void setHitTime(uint8_t cycles);
         inline ChannelConfig withHitTime(uint8_t cycles) { setHitTime(cycles); return *this; }
 
+        //
+        //Sets the hit time using a millisecond value
+        //This will indirectly set the chopping frequency to the highest value
+        //that still keeps the time in range.
+        //
+        //The maximum supported value is 508ms with a chopping frequency of 20khz,
+        //after which this function caps at that value. (ie it will not go infinite)
+        //
+        //The default value is 0ms
+        //
+        inline void setHitTimeMillis(uint16_t ms) {
+
+            // T_HIT = hitTime * 40 / fChop
+            // so hitTime = T_HIT * fChop / 40
+            // so hitTime = T_HIT_s  * 80_000hz / 40
+            // so hitTime = T_HIT_s  * 8_000hz / 4
+            // so hitTime = T_HIT_ms * 8 / 4
+            // so hitTime = T_HIT_ms * 2
+
+            //get the number of cycles at full speed
+            uint16_t cycles = ms * 2;
+
+            //Pick the highest chopping frequency that lets use this hit time
+            if(cycles < 256) {
+                setHitTime(cycles);
+                setChoppingFrequency(F80kHZ);
+            } else if(cycles < 256*2) {
+                setHitTime(cycles/2);
+                setChoppingFrequency(F40kHZ);
+            } else if(cycles < 256*3) {
+                setHitTime(cycles/3);
+                setChoppingFrequency(F26kHZ);
+            } else if(cycles < 256*4) {
+                setHitTime(cycles/4);
+                setChoppingFrequency(F20kHZ);
+            } else {
+                //set to the maximum if we can't go that high
+                setHitTime(254);
+                setChoppingFrequency(F20kHZ);
+            }
+
+        }
+
+        inline ChannelConfig withHitTimeMillis(uint8_t ms) { setHitTimeMillis(ms); return *this; }
+
         uint8_t hitTime() const;
+
+        inline uint16_t hitTimeMillis() const {
+            return (uint16_t) hitTime() * 40 / (uint16_t) choppingFrequencykHz();
+        }
 
         //
         //Chooses whether this channel will use low-side or high-side switching.

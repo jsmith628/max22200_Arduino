@@ -33,6 +33,15 @@ bool MAX22200::ChannelConfig::usesVoltageDrive() const {
     return (bits & _BV(MAX22200_VDRnCDR)) != 0;
 }
 
+void MAX22200::ChannelConfig::setChoppingFrequency(MAX22200::ChoppingFrequency f) {
+    bits &= ~((uint32_t) 0b11u << MAX22200_FREQ_CFG);
+    bits |= (uint32_t) f << MAX22200_FREQ_CFG;
+}
+
+MAX22200::ChoppingFrequency MAX22200::ChannelConfig::choppingFrequency() const {
+    return (ChoppingFrequency) ((bits >> MAX22200_FREQ_CFG) & 0b11u);
+}
+
 void MAX22200::ChannelConfig::setHit(uint8_t level) {
     level >>= 1; //reduce to 7-bits
     bits &= ~((uint32_t) 0x7Fu << MAX22200_HIT); //reset the hold current
@@ -240,7 +249,7 @@ uint8_t MAX22200::getChannels() {
     return (uint8_t) (status >> MAX22200_ONCH);
 }
 
-void MAX22200::setChannels(uint8_t out) {
+void MAX22200::writeChannels(uint8_t out) {
     status &= 0x00FFFFFFu;
     status |= (uint32_t) out << MAX22200_ONCH;
     write8(MAX22200_STATUS, out);
@@ -253,11 +262,11 @@ bool MAX22200::getChannel(uint8_t ch) {
 void MAX22200::writeChannel(uint8_t ch, bool on) {
     uint8_t channels = getChannels();
     SET_BITS(channels, 1<<ch, on);
-    setChannels(channels);
+    writeChannels(channels);
 }
 
 bool MAX22200::toggleChannel(uint8_t ch) {
-    setChannels(getChannels() ^ _BV(ch));
+    writeChannels(getChannels() ^ _BV(ch));
 }
 
 void MAX22200::configChannel(uint8_t ch, MAX22200::ChannelConfig cfg) {
