@@ -250,13 +250,9 @@ bool MAX22200::getChannel(uint8_t ch) {
     return (status & _BV(ch+MAX22200_ONCH)) != 0;
 }
 
-void MAX22200::setChannel(uint8_t ch, bool on) {
+void MAX22200::writeChannel(uint8_t ch, bool on) {
     uint8_t channels = getChannels();
-    if(on) {
-        channels |= 1<<ch;
-    } else {
-        channels &= ~(1<<ch);
-    }
+    SET_BITS(channels, 1<<ch, on);
     setChannels(channels);
 }
 

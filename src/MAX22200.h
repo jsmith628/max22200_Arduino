@@ -204,8 +204,8 @@ public:
     void setChannelMode(uint8_t ch, ChannelMode mode);
     ChannelMode getChannelMode(uint8_t ch);
 
-    void setChannels(uint8_t out);
-    void setChannel(uint8_t ch, bool on);
+    void writeChannels(uint8_t out);
+    void writeChannel(uint8_t ch, bool on);
     bool toggleChannel(uint8_t ch);
     uint8_t getChannels();
     bool getChannel(uint8_t ch);
