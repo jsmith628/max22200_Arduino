@@ -243,7 +243,8 @@ void MAX22200::setChannelMode(uint8_t ch, ChannelMode mode) {
 MAX22200::ChannelMode MAX22200::getChannelMode(uint8_t ch) {
     //round down to nearest even number
     ch &= ~1u;
-    return 0b11 & (status >> (MAX22200_CM10 + ch));
+    uint32_t bits = 0b11 & (status >> (MAX22200_CM10 + ch));
+    return (MAX22200::ChannelMode) (bits);
 }
 
 uint8_t MAX22200::getChannels() {
