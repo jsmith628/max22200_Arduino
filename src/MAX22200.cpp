@@ -276,6 +276,5 @@ void MAX22200::configChannel(uint8_t ch, MAX22200::ChannelConfig cfg) {
 }
 
 MAX22200::ChannelConfig MAX22200::readChannelConfig(uint8_t ch) {
-    return { read32(MAX22200_CFG_CH1+ch) };
+    return ChannelConfig(read32(MAX22200_CFG_CH1+ch));
 }
-

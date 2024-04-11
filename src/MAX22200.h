@@ -17,7 +17,8 @@ public:
 
     struct ChannelConfig {
 
-        uint32_t bits = 0;
+        uint32_t bits;
+        inline ChannelConfig(): bits(0) {}
 
         //
         //Selects whether to use the full range of available current/voltage,
@@ -242,6 +243,10 @@ public:
         inline ChannelConfig withoutHitCurrentCheck() { disableHitCurrentCheck(); return *this; }
 
         bool hitCurrentCheckEnabled() const;
+
+        private:
+          inline ChannelConfig(uint32_t bits): bits(bits) {}
+          friend class MAX22200;
 
     };
 
