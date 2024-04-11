@@ -12,7 +12,7 @@ public:
     };
 
     enum ChoppingFrequency {
-        F20kHZ = 0, F26kHZ = 1, F40kHZ = 2, F80kHZ = 3
+        F20khz = 0, F26khz = 1, F40khz = 2, F80khz = 3
     };
 
     struct ChannelConfig {
@@ -74,7 +74,7 @@ public:
         //ripples in the output at the cost of a reduced range of possible hit times.
         //Setting this on its own *will* change the hit time that's currently set.
         //It's recommended to use setHitTimeMicros() to set this indirectly.
-        //Default Value is 100kHz
+        //Default Value is 100khz
         //
         void setChoppingFrequency(ChoppingFrequency f);
         inline ChannelConfig withChoppingFrequency(ChoppingFrequency f) {
@@ -83,12 +83,12 @@ public:
         }
 
         ChoppingFrequency choppingFrequency() const;
-        inline uint8_t choppingFrequencykHz() const {
+        inline uint8_t choppingFrequencykhz() const {
             switch(choppingFrequency()) {
-                case F80kHZ: return 80;
-                case F40kHZ: return 40;
-                case F26kHZ: return 26;
-                case F20kHZ: return 20;
+                case F80khz: return 80;
+                case F40khz: return 40;
+                case F26khz: return 26;
+                case F20khz: return 20;
                 default: return 80;
             }
         }
@@ -150,20 +150,20 @@ public:
             //Pick the highest chopping frequency that lets use this hit time
             if(cycles < 255) {
                 setHitTime(cycles);
-                setChoppingFrequency(F80kHZ);
+                setChoppingFrequency(F80khz);
             } else if(cycles < 255*2) {
                 setHitTime(cycles/2);
-                setChoppingFrequency(F40kHZ);
+                setChoppingFrequency(F40khz);
             } else if(cycles < 255*3) {
                 setHitTime(cycles/3);
-                setChoppingFrequency(F26kHZ);
+                setChoppingFrequency(F26khz);
             } else if(cycles < 255*4) {
                 setHitTime(cycles/4);
-                setChoppingFrequency(F20kHZ);
+                setChoppingFrequency(F20khz);
             } else {
                 //set to the maximum if we can't go that high
                 setHitTime(254);
-                setChoppingFrequency(F20kHZ);
+                setChoppingFrequency(F20khz);
             }
 
         }
@@ -173,7 +173,7 @@ public:
         uint8_t hitTime() const;
 
         inline uint16_t hitTimeMillis() const {
-            return (uint16_t) hitTime() * 40 / (uint16_t) choppingFrequencykHz();
+            return (uint16_t) hitTime() * 40 / (uint16_t) choppingFrequencykhz();
         }
 
         //
@@ -265,7 +265,7 @@ private:
 
 public:
 
-    MAX22200(uint8_t en, uint8_t csb, uint8_t cmd);
+    MAX22200(uint8_t enable_pin, uint8_t chip_select_pin, uint8_t command_pin);
 
     void enable();
     void disable();
